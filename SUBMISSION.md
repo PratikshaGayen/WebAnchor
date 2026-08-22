@@ -60,7 +60,7 @@ isolated contract.
 > repo with reproductions, since they'll affect any multi-file GenVM contract, not
 > just this one.
 >
-> Repo: `<INSERT PUBLIC REPO URL HERE — see note below>`
+> Repo: https://github.com/PratikshaGayen/WebAnchor
 > Key docs: `BENCHMARK.md` (measured numbers), `README_DEMO.md` (the 30-second proof),
 > `BLUEPRINT.md` (architecture and the six non-negotiable rules the code is held to).
 
@@ -68,23 +68,23 @@ isolated contract.
 
 ## Supporting links to attach
 
-| What | Path | Why a reviewer opens it |
+| What | Link | Why a reviewer opens it |
 |---|---|---|
-| Demo proof | `README_DEMO.md` | 30-second read: the two contracts, the exact command, the actual diverge/converge values |
-| Benchmark | `BENCHMARK.md` | The real, unrounded numbers — including the unflattering ones, explained |
-| Architecture | `BLUEPRINT.md` | The six rules (R1–R6) the whole codebase is structurally tested against |
-| Library | `webanchor/` | ~9,500 lines across the package + tests |
-| Demo contracts | `contracts/naive_reader.py`, `contracts/anchored_reader/` | The side-by-side proof artifact |
+| Repository | https://github.com/PratikshaGayen/WebAnchor | The whole project |
+| Demo proof | https://github.com/PratikshaGayen/WebAnchor/blob/main/README_DEMO.md | 30-second read: the two contracts, the exact command, the actual diverge/converge values |
+| Benchmark | https://github.com/PratikshaGayen/WebAnchor/blob/main/BENCHMARK.md | The real, unrounded numbers — including the unflattering ones, explained |
+| Architecture | https://github.com/PratikshaGayen/WebAnchor/blob/main/BLUEPRINT.md | The six rules (R1–R6) the whole codebase is structurally tested against |
+| Library | https://github.com/PratikshaGayen/WebAnchor/tree/main/webanchor | ~9,500 lines across the package + tests |
+| Demo contracts | https://github.com/PratikshaGayen/WebAnchor/tree/main/contracts | The side-by-side proof artifact |
 
 ---
 
-## What's NOT yet true — check before submitting
+## Status
 
-- **No public repository exists yet.** This project has not been `git init`'d, has no
-  commits, and has no GitHub remote. The submission form very likely requires a public
-  link. This is a decision for you, not something to do silently — creating a repo and
-  pushing code publicly are both actions I won't take without your explicit go-ahead.
-- The description above is a draft assuming the "Projects" category's actual form
-  fields match the screenshot (Contribution Type, category picker, free-text
-  description). If the real form asks for structured fields (tech stack, links,
-  team members) that aren't a single textarea, tell me and I'll reshape this to match.
+Pushed and verified live at https://github.com/PratikshaGayen/WebAnchor — public, one
+clean commit, author attribution confirmed on GitHub's own commit page.
+
+The description above is a draft assuming the "Projects" category's actual form
+fields match the screenshot (Contribution Type, category picker, free-text
+description). If the real form asks for structured fields (tech stack, links,
+team members) that aren't a single textarea, say so and it can be reshaped to match.
