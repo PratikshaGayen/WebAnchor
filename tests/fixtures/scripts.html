@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <style>
+    .headline { color: ZZSTYLETOKENZZ; }
+    body::after { content: "</div>"; }
+  </style>
+  <script>
+    var marker = "ZZSCRIPTTOKENZZ";
+    var trap = "</div><p>this is inside a JS string</p>";
+    var built = "2024-01-01T00:00:00Z";
+    if (1 < 2 && 3 > 2) { console.log(marker, trap, built); }
+  </script>
+</head>
+<body>
+  <!-- build: ZZBUILDHASHZZ deployed from host web-07 -->
+  <h1>Visible Headline</h1>
+  <p>Visible paragraph after the script trap.</p>
+  <noscript><p>ZZNOSCRIPTTOKENZZ</p></noscript>
+  <p>Last visible paragraph.</p>
+</body>
+</html>

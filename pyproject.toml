@@ -1,0 +1,34 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "webanchor"
+version = "0.1.0"
+description = "Web-evidence normalization layer for GenLayer intelligent contracts"
+readme = { text = "WebAnchor turns a web read into a strict_eq-able fact.", content-type = "text/plain" }
+requires-python = ">=3.12"
+dependencies = []
+
+[project.optional-dependencies]
+dev = ["pytest>=8"]
+
+[tool.setuptools.packages.find]
+include = ["webanchor*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+# tests/direct/ holds GenVM contract tests that load the genlayer-test plugin's
+# direct-mode runtime (see gltest.direct). That runtime installs a REAL
+# `genlayer` package into sys.modules and sys.path for the rest of the
+# process once a contract is deployed -- there is no per-test teardown for
+# that pollution. Mixed into the same session as the pure-python suite (whose
+# tests/test_anchor.py etc. rely on `genlayer` being ABSENT so they can
+# install their own fakes, per blueprint rule R2), it causes real, silent
+# cross-test failures: confirmed by running `pytest tests/` unfiltered and
+# watching test_anchor.py fail only when collected together with
+# tests/direct/, while passing standalone. Excluding "direct" from implicit
+# recursive collection keeps `pytest tests/` (or bare `pytest`) exercising
+# exactly the pure-python suite; `pytest tests/direct/ -v` still works because
+# an explicitly named path bypasses norecursedirs.
+norecursedirs = ["direct", ".git", ".pytest_cache", "artifacts"]

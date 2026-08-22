@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>What a 404 actually means, and why your site probably gets it wrong</title>
+  <meta name="description" content="A long read on HTTP status codes, soft error pages, and bot walls.">
+</head>
+<body>
+  <article>
+    <h1>What a 404 actually means, and why your site probably gets it wrong</h1>
+    <p class="byline">Filed under: engineering, web infrastructure</p>
+
+    <p>Every developer has seen a 404. Fewer have thought carefully about what
+    the status code is actually asserting. HTTP 404 Not Found is a statement
+    about a <em>resource</em>, not about a page: the origin server is telling
+    the client that it has no representation for the requested target, and
+    that it is not going to speculate about why. That is a narrow, honest
+    claim, and it is far more useful than the alternatives most content
+    management systems reach for.</p>
+
+    <p>The trouble starts when a site decides that returning a 404 looks
+    unfriendly. A designer adds a nicely illustrated page not found screen,
+    someone wires it into the router, and somewhere along the way the status
+    line quietly becomes 200 OK. The page still says the words page not found
+    in large friendly letters, but every automated consumer of that URL now
+    believes the request succeeded. Search crawlers index the error screen.
+    Link checkers report the link as healthy. Monitoring dashboards show a
+    perfect success rate while every single visitor lands on an apology.</p>
+
+    <h2>Soft errors are worse than hard errors</h2>
+
+    <p>The industry name for this is a soft 404, and it deserves the mild
+    contempt the name carries. A hard error is loud: something upstream can
+    react to it, retry it, alert on it, or fall back. A soft error is silent
+    by construction, because it has deliberately disguised itself as a
+    success. The information that would let a machine do the right thing has
+    been discarded in exchange for a nicer looking screen, and the screen
+    could have been just as nice with the correct status attached to it.</p>
+
+    <p>The same pathology shows up in maintenance pages. A deployment goes
+    sideways, the platform swaps in a we will be back shortly banner, and it
+    serves that banner with a 200 because the banner itself rendered fine. The
+    correct answer is 503 Service Unavailable, ideally with a Retry-After
+    header, and it costs nothing to send.</p>
+
+    <h2>Bot walls have the same shape</h2>
+
+    <p>Challenge pages are the third member of this family. If you have ever
+    watched an interstitial that sits there checking your browser for a few
+    seconds before letting you through, you have met one. The interstitial is
+    doing something reasonable from the origin's point of view, but it is
+    almost always served with a 200 status, and the body it returns has
+    nothing to do with the content anybody asked for. An automated client that
+    trusts the status code will happily parse the challenge screen as though
+    it were the article, the product listing, or the API response it went
+    looking for.</p>
+
+    <p>This matters enormously for anything that reads the web on your behalf.
+    A scraper that stores a challenge page as though it were content will
+    silently poison a dataset. A language model handed a challenge page as
+    context will answer the question it was asked, confidently, from text that
+    has no bearing on the question. The failure is not that the tool crashed.
+    The failure is that it did not.</p>
+
+    <h2>What to do instead</h2>
+
+    <p>Send the right status code. Send 404 for a missing resource, 410 when
+    you know the resource is gone for good, 503 during maintenance, and 429
+    when you are rate limiting. Put the friendly illustration in the body of
+    the response where it belongs, alongside the correct status line rather
+    than instead of it.</p>
+
+    <p>On the consuming side, assume the status line is necessary but not
+    sufficient. Check the shape of what came back. A response of a few hundred
+    characters whose first sentence is an apology is not the article you
+    requested, whatever number preceded it. Anything that automates a
+    judgement about web content should be able to refuse to make one.</p>
+
+    <p>None of this is difficult. It is simply unglamorous, which is why the
+    404 on your own site is quite possibly returning 200 as you read this.</p>
+  </article>
+</body>
+</html>

@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Order Status</title>
+  <script nonce="z9onceBBBBBBBBBB2">
+    window.__RENDERED_AT__ = "2024-05-01T08:19:47Z";
+    window.__REQUEST_ID__ = "req-bbbbbbbb-2222";
+  </script>
+</head>
+<body>
+  <!-- build: 91de77c503 deployed 2024-05-01T08:19:47Z from host web-13 -->
+  <header><h1>Order Status</h1></header>
+  <main>
+    <p>Order 100418 was shipped on 12 April 2024.</p>
+    <p>Carrier: Northwind Freight. Tracking: NW-88213-XZ.</p>
+    <table>
+      <tr><th>Item</th><th>Qty</th></tr>
+      <tr><td>Widget 42</td><td>3</td></tr>
+      <tr><td>Bracket 7</td><td>1</td></tr>
+    </table>
+    <form action="/orders/100418/cancel" method="post">
+      <input type="hidden" name="csrf_token" value="ZZZZ9999yyyy8888xxxx7777">
+      <button type="submit">Cancel order</button>
+    </form>
+    <div class="ad-slot" data-campaign="spring-b" data-nonce="z9onceBBBBBBBBBB2">
+      <iframe src="https://ads.example.com/creative/bbbb?cb=1714551587" title="advert">
+        Rotating creative B: free shipping on orders over 50 euro!
+      </iframe>
+      <script nonce="z9onceBBBBBBBBBB2">renderAd("bbbb", 1714551587);</script>
+    </div>
+    <p>Delivery is expected within two business days.</p>
+  </main>
+  <footer><p>Northwind Trading Company</p></footer>
+</body>
+</html>
