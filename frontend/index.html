@@ -21,7 +21,7 @@
 
       <section class="controls" aria-label="Run configuration">
         <div class="field field-wide">
-          <label for="url">Page URL (must be reachable from inside the Studio containers)</label>
+          <label for="url">Page URL (must be reachable from the node's validators, and volatile enough to be worth reading)</label>
           <input id="url" type="text" spellcheck="false" />
         </div>
         <div class="field">
@@ -112,9 +112,13 @@
         <p>
           Both transactions are submitted from a burner account generated in the
           browser on page load. Nothing is stored and no wallet extension is
-          needed. Contract addresses come from
-          <code>src/contracts.json</code>, rewritten by
-          <code>python frontend/deploy.py</code>.
+          needed. The default page URL is served by
+          <code>api/volatile.js</code>, a serverless function that returns a
+          different nonce, CSRF token, timestamp, ad id and view count on every
+          single request, so the validators genuinely do see different bytes.
+          Contract addresses come from <code>src/contracts.studionet.json</code>,
+          rewritten by
+          <code>python frontend/deploy.py --network studionet</code>.
         </p>
       </footer>
     </main>

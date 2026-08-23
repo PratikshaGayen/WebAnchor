@@ -1,13 +1,37 @@
 import { createClient, createAccount } from "genlayer-js";
-import { localnet } from "genlayer-js/chains";
+import { localnet, studionet } from "genlayer-js/chains";
 import { TransactionStatus } from "genlayer-js/types";
-import deployed from "./contracts.json";
+import localAddresses from "./contracts.json";
+import studioAddresses from "./contracts.studionet.json";
 
-// Must be reachable from inside the consensus-worker containers, which live in
-// Docker Desktop's VM and cannot see 127.0.0.1 on the host. GenVM's web module
-// also rejects anything that isn't port 80/443, hence no port suffix. See
-// tests/integration/conftest.py for how that was established.
-const DEFAULT_URL = "http://host.docker.internal/orders/100418";
+// localnet is http://127.0.0.1:4000/api, which only means anything on the
+// machine running the Studio Docker stack. studionet is the hosted node at
+// https://studio.genlayer.com/api, same chain id (0xf22f), and it is what the
+// deployed build talks to so a visitor needs no local setup. Set
+// VITE_GL_NETWORK=localnet to point a dev server back at your own stack.
+const NETWORK = import.meta.env.VITE_GL_NETWORK === "localnet" ? "localnet" : "studionet";
+const chain = NETWORK === "localnet" ? localnet : studionet;
+const deployed = NETWORK === "localnet" ? localAddresses : studioAddresses;
+
+// On localnet the page has to be reachable from inside the consensus-worker
+// containers, which live in Docker Desktop's VM and cannot see 127.0.0.1 on
+// the host, and GenVM's web module rejects anything that isn't port 80/443 -
+// hence host.docker.internal with no port suffix. See
+// tests/integration/conftest.py for how that was established. On studionet
+// none of that applies: it just needs a normal public https URL, which is what
+// the serverless function in frontend/api/volatile.js serves. Prefer the
+// origin the page is being served from so preview deploys point at their own
+// copy of the function, and fall back to the production host for a dev server.
+const PUBLIC_PAGE_HOST = "https://webanchor-demo.vercel.app";
+
+function defaultUrl(): string {
+  const override = import.meta.env.VITE_DEMO_PAGE_URL;
+  if (override) return override;
+  if (NETWORK === "localnet") return "http://host.docker.internal/orders/100418";
+  const origin = window.location.origin;
+  const base = origin.startsWith("https://") ? origin : PUBLIC_PAGE_HOST;
+  return `${base}/orders/100418`;
+}
 
 // Statuses at which the vote is already in. Anything not in here means the
 // transaction is still working its way through consensus. Note that ACCEPTED
@@ -24,7 +48,9 @@ const TERMINAL: string[] = [
 ];
 
 const POLL_MS = 1500;
-const POLL_TIMEOUT_MS = 240_000;
+// The hosted studionet node is shared and noticeably slower than a local
+// stack, so this is generous on purpose.
+const POLL_TIMEOUT_MS = 300_000;
 
 // genlayer-js brands its hash type with a fixed length, so a plain string
 // won't do. Borrow the exact type back off writeContract.
@@ -76,16 +102,16 @@ const runButton = document.getElementById("run") as HTMLButtonElement;
 const accountLabel = document.getElementById("account") as HTMLElement;
 const banner = document.getElementById("banner") as HTMLElement;
 
-urlInput.value = DEFAULT_URL;
+urlInput.value = defaultUrl();
 naiveAddr.value = deployed.naiveWebReader ?? "";
 anchoredAddr.value = deployed.anchoredWebReader ?? "";
 
-// A throwaway keypair minted in the page. Studio's localnet does not gate
+// A throwaway keypair minted in the page. Neither localnet nor studionet gates
 // transactions on a funded balance, so there is nothing to top up and no
 // wallet extension to install -- see frontend/README.md.
 const account = createAccount();
-const client = createClient({ chain: localnet, account });
-accountLabel.textContent = `burner account ${account.address}`;
+const client = createClient({ chain, account });
+accountLabel.textContent = `${NETWORK} - burner account ${account.address}`;
 
 function setBanner(text: string, kind: "" | "error" | "ok" = "") {
   banner.textContent = text;
@@ -344,7 +370,7 @@ runButton.addEventListener("click", async () => {
 
   runButton.disabled = true;
   setBanner(
-    "Both transactions are in flight. Real consensus over three workers takes roughly 30-60 seconds each.",
+    "Both transactions are in flight. Real consensus over three validators takes roughly a minute each, sometimes longer on the shared hosted node.",
   );
   try {
     // Run them concurrently so both hit the same volatile page in the same

@@ -2,6 +2,12 @@
 
 A normalization layer that sits between a GenLayer contract's web fetch and the LLM.
 
+Live demo: https://webanchor-demo.vercel.app - press "Run both contracts" and
+wait about a minute. It's two real transactions on GenLayer's hosted
+`studionet` node, signed by a burner key the page generates for you, reading a
+page that genuinely changes on every request. One contract fails consensus and
+one doesn't. No wallet, no install, nothing to run locally.
+
 Here's the problem it's solving. On GenLayer, the leader and every validator hit a
 URL independently. Real pages don't hold still between those requests - ads
 rotate, CSRF tokens get reissued, timestamps tick over, view counters go up by
@@ -63,8 +69,28 @@ the same URL and shows the whole transaction lifecycle side by side, live. It
 signs and submits with `genlayer-js` against a real Studio node, so it's the
 same proof the integration tests do, except you can watch it happen.
 
-You need the Studio Docker stack up, the per-request-volatile page server
-running on port 80, and both contracts deployed:
+The deployed copy at https://webanchor-demo.vercel.app talks to the hosted
+`studionet` node, where the two contracts live at
+`0xb680Ac8614e169c5120c24a35b32830b98e9b09C` (naive) and
+`0x41296AD848a5A2955119340E1455673fc8F1CD84` (anchored). The page it reads is
+`frontend/api/volatile.js`, a serverless function that returns a fresh nonce,
+CSRF token, timestamp, ad id and view count on every request and sends
+`Cache-Control: no-store` so the edge can't hand every validator the same
+bytes. Curl it twice and diff it if you want to check that for yourself - the
+order number, carrier, tracking id and item table stay put, everything else
+moves.
+
+Press "Run both contracts" and wait. NaiveWebReader lands on `UNDETERMINED` /
+`MAJORITY_DISAGREE` with its validators voting disagree and nothing written to
+storage, AnchoredWebReader lands on `ACCEPTED` / `MAJORITY_AGREE` and the page
+reads its stored fingerprint back off chain with `get_last_fingerprint()`. Both
+address fields and the URL field are editable if you'd rather point it at your
+own deploy. `frontend/screenshot-studionet.png` is what a finished public run
+looks like.
+
+It still runs against a local Studio stack if you want that. You need the
+Docker stack up, the per-request-volatile page server on port 80, and both
+contracts deployed:
 
 ```bash
 python tests/integration/volatile_server.py 80   # leave this running
@@ -72,17 +98,12 @@ python frontend/deploy.py                        # writes frontend/src/contracts
 
 cd frontend
 npm install
-npm run dev                                      # http://localhost:5173
+VITE_GL_NETWORK=localnet npm run dev             # http://localhost:5173
 ```
 
-Press "Run both contracts" and wait. NaiveWebReader lands on `UNDETERMINED` /
-`MAJORITY_DISAGREE` with all three validators voting disagree and nothing
-written to storage, AnchoredWebReader lands on `ACCEPTED` / `MAJORITY_AGREE`
-and the page reads its stored fingerprint back off chain with
-`get_last_fingerprint()`. Both address fields are editable if you'd rather
-point it at your own deploy. `frontend/README.md` has the details, including
-why the default URL has to be `host.docker.internal` on port 80, and
-`frontend/screenshot.png` is what a finished run looks like.
+`frontend/README.md` has the details for both paths, including why the localnet
+URL has to be `host.docker.internal` on port 80 and why none of that applies on
+studionet.
 
 ## A few things worth knowing before you trust it
 
