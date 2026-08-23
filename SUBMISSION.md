@@ -33,6 +33,10 @@ isolated contract.
 > fingerprint — or raises a typed error instead of silently producing a verdict from
 > a bot-wall or soft-error page.
 >
+> Live demo (no install, no wallet): https://webanchor-demo.vercel.app
+Two real transactions on GenLayer's hosted studionet against a page that
+genuinely changes every request - one contract fails consensus, one doesn't.
+>
 > **What's included:**
 > - A zero-dependency, pure-stdlib Python library (`webanchor/`, ~13 modules) that
 >   imports and runs with no GenLayer SDK present — the entire normalization pipeline
