@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>WebAnchor - side-by-side consensus demo</title>
+    <link rel="icon" href="data:," />
+    <link rel="stylesheet" href="/src/styles.css" />
+  </head>
+  <body>
+    <main class="page">
+      <header class="masthead">
+        <h1>WebAnchor</h1>
+        <p class="tagline">
+          Two GenLayer contracts read the same volatile page in the same block.
+          One reaches consensus, one doesn't. The only difference is whether the
+          fetch goes through WebAnchor's normalization before
+          <code>strict_eq</code> sees it.
+        </p>
+      </header>
+
+      <section class="controls" aria-label="Run configuration">
+        <div class="field field-wide">
+          <label for="url">Page URL (must be reachable from inside the Studio containers)</label>
+          <input id="url" type="text" spellcheck="false" />
+        </div>
+        <div class="field">
+          <label for="naive-address">NaiveWebReader address</label>
+          <input id="naive-address" type="text" spellcheck="false" class="mono" />
+        </div>
+        <div class="field">
+          <label for="anchored-address">AnchoredWebReader address</label>
+          <input id="anchored-address" type="text" spellcheck="false" class="mono" />
+        </div>
+        <div class="actions">
+          <button id="run" type="button">Run both contracts</button>
+          <span id="account" class="account mono"></span>
+        </div>
+      </section>
+
+      <div id="banner" class="banner" hidden></div>
+
+      <section class="columns">
+        <article class="card" id="card-naive">
+          <div class="card-head">
+            <div>
+              <h2>NaiveWebReader</h2>
+              <p class="sub">Raw <code>gl.nondet.web.get</code> straight into <code>strict_eq</code></p>
+            </div>
+            <span class="badge badge-idle" data-role="badge">idle</span>
+          </div>
+          <dl class="kv">
+            <dt>Transaction</dt>
+            <dd class="hashrow">
+              <span class="mono hash" data-role="hash">-</span>
+              <button class="copy" type="button" data-role="copy" hidden>copy</button>
+            </dd>
+            <dt>Status</dt>
+            <dd class="mono" data-role="status">-</dd>
+            <dt>Consensus result</dt>
+            <dd class="mono" data-role="result">-</dd>
+          </dl>
+          <h3 class="section-title">Lifecycle</h3>
+          <ol class="timeline" data-role="timeline"></ol>
+          <h3 class="section-title">Validator votes</h3>
+          <ul class="votes" data-role="votes">
+            <li class="empty">no votes yet</li>
+          </ul>
+          <h3 class="section-title">On-chain state</h3>
+          <div class="outcome" data-role="outcome">Not read yet.</div>
+          <details class="raw" data-role="eqwrap" hidden>
+            <summary>Leader's equivalence-principle output</summary>
+            <pre class="mono" data-role="eq"></pre>
+          </details>
+        </article>
+
+        <article class="card" id="card-anchored">
+          <div class="card-head">
+            <div>
+              <h2>AnchoredWebReader</h2>
+              <p class="sub">Same shape, fetch routed through <code>webanchor.anchor</code></p>
+            </div>
+            <span class="badge badge-idle" data-role="badge">idle</span>
+          </div>
+          <dl class="kv">
+            <dt>Transaction</dt>
+            <dd class="hashrow">
+              <span class="mono hash" data-role="hash">-</span>
+              <button class="copy" type="button" data-role="copy" hidden>copy</button>
+            </dd>
+            <dt>Status</dt>
+            <dd class="mono" data-role="status">-</dd>
+            <dt>Consensus result</dt>
+            <dd class="mono" data-role="result">-</dd>
+          </dl>
+          <h3 class="section-title">Lifecycle</h3>
+          <ol class="timeline" data-role="timeline"></ol>
+          <h3 class="section-title">Validator votes</h3>
+          <ul class="votes" data-role="votes">
+            <li class="empty">no votes yet</li>
+          </ul>
+          <h3 class="section-title">On-chain state</h3>
+          <div class="outcome" data-role="outcome">Not read yet.</div>
+          <details class="raw" data-role="eqwrap" hidden>
+            <summary>Leader's equivalence-principle output</summary>
+            <pre class="mono" data-role="eq"></pre>
+          </details>
+        </article>
+      </section>
+
+      <footer class="footnote">
+        <p>
+          Both transactions are submitted from a burner account generated in the
+          browser on page load. Nothing is stored and no wallet extension is
+          needed. Contract addresses come from
+          <code>src/contracts.json</code>, rewritten by
+          <code>python frontend/deploy.py</code>.
+        </p>
+      </footer>
+    </main>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>

@@ -35,6 +35,8 @@ evidence.text          # normalized text, safe to hand to an LLM
   WebAnchor and doesn't.
 - `tests/` - 1,335 tests for the library, plus a handful of direct-mode tests
   that actually deploy both contracts and show one failing, one passing.
+- `frontend/` - a browser dApp that runs both contracts against a live node
+  and shows the transaction lifecycle and validator votes side by side.
 - `tools/corpus_bench.py` - the script behind the numbers in BENCHMARK.md.
 - `BLUEPRINT.md` - architecture notes and the rules I held the code to.
 - `BENCHMARK.md` - measured agreement rates, including the runs that didn't hit
@@ -53,6 +55,34 @@ pytest tests/ -v              # library tests, no network, no GenVM needed
 pytest tests/direct/ -v       # the two demo contracts, still no live node
 python tools/corpus_bench.py  # regenerates the benchmark numbers
 ```
+
+## The frontend
+
+`frontend/` is a small Vite + TypeScript page that runs both contracts against
+the same URL and shows the whole transaction lifecycle side by side, live. It
+signs and submits with `genlayer-js` against a real Studio node, so it's the
+same proof the integration tests do, except you can watch it happen.
+
+You need the Studio Docker stack up, the per-request-volatile page server
+running on port 80, and both contracts deployed:
+
+```bash
+python tests/integration/volatile_server.py 80   # leave this running
+python frontend/deploy.py                        # writes frontend/src/contracts.json
+
+cd frontend
+npm install
+npm run dev                                      # http://localhost:5173
+```
+
+Press "Run both contracts" and wait. NaiveWebReader lands on `UNDETERMINED` /
+`MAJORITY_DISAGREE` with all three validators voting disagree and nothing
+written to storage, AnchoredWebReader lands on `ACCEPTED` / `MAJORITY_AGREE`
+and the page reads its stored fingerprint back off chain with
+`get_last_fingerprint()`. Both address fields are editable if you'd rather
+point it at your own deploy. `frontend/README.md` has the details, including
+why the default URL has to be `host.docker.internal` on port 80, and
+`frontend/screenshot.png` is what a finished run looks like.
 
 ## A few things worth knowing before you trust it
 
