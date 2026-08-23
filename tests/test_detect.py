@@ -226,7 +226,7 @@ def test_marker_matching_is_case_insensitive():
 #
 # This whole branch is gated behind Policy.detect_bot_wall_server_hint, which
 # defaults to False (only Policy.strict() turns it on) -- see BENCHMARK.md's
-# "Cloudflare-branch finding": measured on the M5 corpus, this branch had a
+# "Cloudflare-branch finding": measured on the benchmark corpus, this branch had a
 # 40% false-positive rate and 0% measured marginal benefit over the strong-
 # and weak-marker tiers, which is why it is opt-in rather than default-on.
 # The tests below exercise it under STRICT, where it is active; the gate
@@ -295,7 +295,7 @@ def test_server_hint_branch_is_silent_under_default_policy(token):
 
 @pytest.mark.parametrize("name", ["coming_soon.html", "redirect_stub.html"])
 def test_server_hint_branch_silent_on_the_measured_false_positives(name):
-    """The two small-legit fixtures that false-positived in the M5 benchmark
+    """The two small-legit fixtures that false-positived in the benchmark
     (BENCHMARK.md, Cloudflare-branch finding) must raise nothing under
     Policy.default() when served behind a challenge-capable edge -- that is
     the entire point of gating the branch off by default."""

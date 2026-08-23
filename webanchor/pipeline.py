@@ -1,13 +1,13 @@
 """The normalization path, and the two public entry points built on it.
 
-:func:`normalize` is the pure M1-M3 core: raw HTML in, anchorable text out.
-:func:`anchor_html` wraps it with M4 detection, fingerprinting and an
+:func:`normalize` is the pure normalization core: raw HTML in, anchorable text out.
+:func:`anchor_html` wraps it with detection, fingerprinting and an
 :class:`~webanchor.Evidence`; :func:`anchor` is :func:`anchor_html` with a
 GenLayer fetch in front of it.  There is one pipeline implementation, not two
 -- see :func:`anchor_html` for why that is a requirement and not a tidiness
 preference.
 
-:func:`normalize` is the whole M1-M3 library composed in one place.  It touches
+:func:`normalize` is the whole normalization pipeline composed in one place.  It touches
 no network, no clock and no GenLayer runtime -- it is a pure function of
 ``(html, policy)``, which is what makes the entire divergence story testable
 without a validator set.
@@ -96,7 +96,7 @@ def anchor_html(
     *is* the real path; :func:`anchor` is a thin fetch in front of a call to
     this function.  Keeping it that way is deliberate: a demonstration path
     that merely resembled production would prove nothing about production, and
-    the entire M5 divergence corpus, every end-to-end test, and every
+    the entire divergence corpus, every end-to-end test, and every
     off-chain demo of this library run through here.  If the two ever diverge,
     the tests stop testing the shipped code.
 
@@ -176,7 +176,7 @@ def anchor(
     ``fetch_raw`` -> ``check_response`` -> ``normalize`` -> ``fingerprint`` ->
     :class:`~webanchor.Evidence`.  Every step after the fetch is delegated to
     :func:`anchor_html`, which is the same function the offline tests and the
-    M5 corpus exercise, so there is exactly one implementation of the pipeline.
+    benchmark corpus exercise, so there is exactly one implementation of the pipeline.
 
     ``webanchor.fetch`` is imported **inside this function body**, never at
     module scope.  ``pipeline`` is imported by ``webanchor/__init__.py``, so a

@@ -1,4 +1,4 @@
-"""The M6 proof: NaiveWebReader diverges, AnchoredWebReader converges.
+"""The proof: NaiveWebReader diverges, AnchoredWebReader converges.
 
 Every test here uses ``direct_vm.mock_web`` to simulate what an independent
 validator fetch looks like: mock response A represents the leader's fetch,
@@ -8,7 +8,7 @@ hand-verified to differ only in nonce/CSRF/timestamp/ad-rotation/build-hash --
 exactly the kind of divergence real pages exhibit between two independent
 HTTP requests.
 
-Procedure per contract (mirroring what the M6 spec calls "simulated
+Procedure per contract (mirroring what this project calls "simulated
 validators"): deploy the contract once, configure mock A, call the write
 method, read back the stored result; then ``direct_vm.clear_mocks()``,
 configure mock B, call the SAME write method again on the SAME deployed
@@ -27,7 +27,7 @@ does, since the loader re-execs the file as a fresh module -- trips
 the production SDK (one contract per WASM module/execution), not a
 direct-mode quirk, so the fix is procedural: reuse one deployment and vary
 the mocked response between two writes, which is exactly the "clear_mocks()
-+ reconfiguring" alternative the M6 spec allows.
++ reconfiguring" alternative described above.
 
 ``webanchor.anchor(url, mode="get")`` inside ``AnchoredWebReader`` and
 ``gl.nondet.web.get(url)`` inside ``NaiveWebReader`` both route through

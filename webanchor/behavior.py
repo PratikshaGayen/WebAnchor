@@ -131,8 +131,8 @@ __all__ = ["BEHAVIOR_VERSION"]
 #:
 #: History
 #: -------
-#: 1. M1-M3: stripping, text canonicalization, timestamps, numbers.
-#: 2. M4: the ``detect.py`` marker tables entered the output-affecting set
+#: 1. The normalization stages: stripping, text canonicalization, timestamps, numbers.
+#: 2. Fetch/detection: the ``detect.py`` marker tables entered the output-affecting set
 #:    (item 11 above), and number banding's ``percent`` mode was replaced by
 #:    ``grid``.  Both change what the library does with some input, and the
 #:    detection tables are not reachable from any :class:`~webanchor.Policy`

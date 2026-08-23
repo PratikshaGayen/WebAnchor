@@ -64,7 +64,7 @@ ordinary small pages.
 
 This tier defaults to **off** (``Policy.default().detect_bot_wall_server_hint
 is False``; only :meth:`webanchor.Policy.strict` turns it on), and the reason
-is measured, not argued: the M5 benchmark (``BENCHMARK.md``,
+is measured, not argued: the benchmark corpus (``BENCHMARK.md``,
 "Cloudflare-branch finding") ran this branch against
 ``tests/fixtures/corpus/small_legit/`` -- five tiny, realistic non-challenge
 pages (a landing stub, a redirect stub, a status endpoint, a "coming soon"
@@ -337,7 +337,7 @@ def _check_bot_wall(
             )
 
     if not policy.detect_bot_wall_server_hint:
-        # Opt-in only (Policy.strict() turns it on). Measured on the M5
+        # Opt-in only (Policy.strict() turns it on). Measured on the benchmark
         # benchmark corpus (BENCHMARK.md, "Cloudflare-branch finding"): 2/5
         # small legitimate pages fronted by a challenge-capable edge raised
         # BotWallDetected on ordinary phrases ("please wait", "redirecting"),

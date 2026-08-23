@@ -1,4 +1,4 @@
-"""M2: the volatile-DOM stripper.
+"""The volatile-DOM stripper.
 
 The centrepiece is :func:`test_MONEY_two_validator_fetches_of_the_same_page_converge`.
 Everything else in this file exists to prove that the money test is not passing
@@ -577,7 +577,7 @@ def test_stripper_does_not_do_m3_canonicalization():
     """Case, unicode form and numbers are canonicalizer concerns, not ours.
 
     ``Policy.strict()`` sets ``lowercase=True`` and number banding; if any of
-    that leaked into ``strip_html`` the module boundary would be broken and M3
+    that leaked into ``strip_html`` the module boundary would be broken and later stages
     would be applying it twice.
     """
     html = "<p>Price 1234.5678 ＡＢＣ</p>"

@@ -54,7 +54,7 @@ DEFAULT_NUMBER_GRID_STEP = "1"
 
 #: Banding modes, in a fixed tuple (R3: never a set).
 #:
-#: ``percent`` was REMOVED in the M4 corrections and is deliberately not kept
+#: ``percent`` was REMOVED after benchmarking and is deliberately not kept
 #: as a deprecated alias.  It banded ``+/- p%`` around *each validator's own
 #: reading*, so two validators reading 1000 and 1050 produced
 #: ``[900~1100]`` and ``[945~1155]`` -- overlapping intervals, different
@@ -227,7 +227,7 @@ class Policy:
     """Share of C0 control characters above which input is rejected as binary.
 
     A **Decimal string** in ``[0, 1]``, parsed with ``Decimal`` at the point of
-    use.  It was a ``float`` through M3, and that was the last float left in a
+    use.  It was a ``float`` in an earlier revision, and that was the last float left in a
     numeric decision path.  The threshold is compared against
     ``controls / len(text)`` to decide whether a node returns text or
     *raises* -- so a one-ulp difference between two CPython builds is not a
@@ -248,7 +248,7 @@ class Policy:
     """Enable the ``Server:`` header + :data:`~webanchor.detect.CHALLENGE_SHAPE_MARKERS`
     branch of bot-wall detection in :func:`webanchor.detect.check_response`.
 
-    Defaults to ``False``.  Measured on the M5 benchmark corpus
+    Defaults to ``False``.  Measured on the benchmark corpus
     (``BENCHMARK.md``, "Cloudflare-branch finding"): with this branch enabled,
     2 of 5 small legitimate pages fronted by a challenge-capable edge
     (``Server: cloudflare``) raised :class:`~webanchor.errors.BotWallDetected`

@@ -1,4 +1,4 @@
-"""Unit tests for the M5 benchmark tooling in ``tools/corpus_bench.py``.
+"""Unit tests for the benchmark tooling in ``tools/corpus_bench.py``.
 
 These test the MUTATORS themselves (determinism, that each changes only what
 it claims to, and that ``compose`` applies in order) and the determinism of

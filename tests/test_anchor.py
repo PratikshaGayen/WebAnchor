@@ -68,7 +68,7 @@ def test_convergence_holds_under_the_default_policy_too():
 
 
 def test_five_simulated_validators_agree():
-    """A preview of the M5 corpus: N independent anchors, one fingerprint."""
+    """A preview of the benchmark corpus: N independent anchors, one fingerprint."""
     captures = [fixture("volatile_a.html"), fixture("volatile_b.html")] * 3
     prints = {anchor_html(html, URL, STRICT).fingerprint for html in captures[:5]}
     assert len(prints) == 1

@@ -117,11 +117,11 @@ tests/
 
 | # | Name | Gate criteria |
 |---|------|---------------|
-| M1 | Foundation: errors, Policy, fingerprint, Evidence | `pytest` green; core imports with no genlayer installed; determinism test passes across subprocesses |
-| M2 | HTML volatile-DOM stripper | Strips script/style/noscript/iframe/svg/embed subtrees and comments; extracts TEXT, so attributes (nonce, CSRF, session ids) are eliminated structurally rather than by blocklist. Ad-container stripping is OPT-IN via `Policy.strict()` — conservative by default. Idempotent. |
-| M3 | Canonicalizers: text, numbers, timestamps | Number banding + timestamp quantization with documented, tested edge cases |
-| M4 | Fetch + detection + `anchor()` | 429/bot-wall/soft-error detection raises typed errors; full end-to-end path |
-| M5 | Divergence corpus + N-validator convergence proof | Simulated 5 validators over mutated real fixtures: raw diverges, WebAnchor converges |
+| Foundation | Errors, Policy, fingerprint, Evidence | `pytest` green; core imports with no genlayer installed; determinism test passes across subprocesses |
+| HTML stripper | Volatile-DOM removal | Strips script/style/noscript/iframe/svg/embed subtrees and comments; extracts TEXT, so attributes (nonce, CSRF, session ids) are eliminated structurally rather than by blocklist. Ad-container stripping is OPT-IN via `Policy.strict()` — conservative by default. Idempotent. |
+| Canonicalizers | Text, numbers, timestamps | Number banding + timestamp quantization with documented, tested edge cases |
+| Fetch + detection | `anchor()` | 429/bot-wall/soft-error detection raises typed errors; full end-to-end path |
+| Benchmark | Divergence corpus + N-validator convergence proof | Simulated 5 validators over mutated real fixtures: raw diverges, WebAnchor converges |
 
 Fast-follow (out of v1 scope, API designed to accommodate): demo
 intelligent contract, benchmark report, published docs.

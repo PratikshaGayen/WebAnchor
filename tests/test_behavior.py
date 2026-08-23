@@ -146,7 +146,7 @@ def test_max_tag_depth_actually_changes_stripper_behavior():
 
 
 # ---------------------------------------------------------------------------
-# The M4 correction: the last float in a numeric decision path is gone
+# The fix: the last float in a numeric decision path is gone
 # ---------------------------------------------------------------------------
 
 

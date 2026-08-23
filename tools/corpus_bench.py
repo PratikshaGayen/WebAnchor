@@ -1,4 +1,4 @@
-"""M5 benchmark: simulate N independent validator fetches of "the same page"
+"""Benchmark: simulate N independent validator fetches of "the same page"
 and measure how often WebAnchor's fingerprint converges, versus raw bytes.
 
 Not part of the ``webanchor`` package -- a script, importing ``webanchor``

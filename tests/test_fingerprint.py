@@ -56,7 +56,7 @@ def test_unicode_round_trips_deterministically(text):
 
 
 def test_unicode_distinct_forms_are_distinct_here():
-    # fingerprint() does not normalize; that is the canonicalizer's job (M3).
+    # fingerprint() does not normalize; that is the canonicalizer's job.
     precomposed = "é"
     decomposed = "é"
     assert precomposed != decomposed

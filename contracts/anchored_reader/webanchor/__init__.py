@@ -4,7 +4,7 @@
 # imported from the repo root, because GenVM's py-genlayer-multi runner executes
 # a contract's own directory in a sandbox that has no visibility into the rest
 # of the repository -- only files shipped inside the contract's directory are
-# available to it at runtime. See BLUEPRINT.md and the M6 report for why this
+# available to it at runtime. See BLUEPRINT.md for why this
 # approach was chosen over alternatives. KEEP IN SYNC with the canonical package;
 # nothing in this vendored copy has been modified beyond this notice comment.
 """WebAnchor -- turn a web read into a ``strict_eq``-able fact.

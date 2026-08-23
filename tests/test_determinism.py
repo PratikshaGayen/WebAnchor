@@ -44,14 +44,14 @@ print(fingerprint(text, default_policy.policy_id))
 print(fingerprint(text, strict_policy.policy_id))
 print(sorted(webanchor.ERROR_BY_CODE))
 
-# M2: the stripper must be stable across processes too, not just in-process.
+# The stripper must be stable across processes too, not just in-process.
 raw = io.open("__FIXTURE__", encoding="utf-8").read()
 stripped = strip_html(raw, default_policy)
 print(repr(stripped))
 print(fingerprint(stripped, default_policy.policy_id))
 print(repr(strip_html(raw, strict_policy)))
 
-# M3: the full normalization path, under both policies.  Every M3 stage is
+# The full normalization path, under both policies.  Every stage is
 # a fresh chance to leak process state -- a set iterated in hash order, a
 # float repr, a locale-dependent strftime -- so the composed output is what
 # has to be compared, not just the stripper's.
@@ -61,7 +61,7 @@ for policy in (default_policy, strict_policy):
     print(repr(sorted(bands.items())))
     print(fingerprint(normalized, policy.policy_id))
 
-# M3: the canonicalizer over a corpus that is nothing but divergence
+# The canonicalizer over a corpus that is nothing but divergence
 # sources -- invisible characters, dash and quote variants, mixed line
 # endings, decomposed accents, non-Latin scripts, astral-plane emoji.
 nasty = (
@@ -74,7 +74,7 @@ for policy in (default_policy, strict_policy):
     print(repr(canon))
     print(repr(canonicalize_text(canon, policy)))
 
-# M3: timestamp and number handling, including the quantize mode that has
+# Timestamp and number handling, including the quantize mode that has
 # to survive the number stage intact.
 volatile = (
     "Posted 2024-04-12T08:15:22Z, updated 4 minutes ago, "
@@ -87,7 +87,7 @@ for policy in (default_policy, strict_policy,
     print(policy.policy_id)
     print(repr(normalize("<p>" + volatile + "</p>", policy)))
 
-# M4: the top-level API.  ``anchor_html`` adds detection, fingerprinting and
+# The top-level API.  ``anchor_html`` adds detection, fingerprinting and
 # an Evidence on top of ``normalize``; each of those is a fresh chance to leak
 # process state, and the Evidence is what actually reaches consensus calldata,
 # so the calldata dict -- not just the text -- is what has to be compared.
@@ -142,7 +142,7 @@ def test_subprocess_output_matches_in_process_values():
 
 
 def test_subprocess_strip_html_matches_in_process():
-    """M2 coverage: the stripper is stable across processes, not just calls."""
+    """The stripper is stable across processes, not just calls."""
     import io as _io
 
     from webanchor import Policy, fingerprint
@@ -165,7 +165,7 @@ def _lines():
 
 
 def test_subprocess_normalize_matches_in_process():
-    """M3 coverage: the composed pipeline is stable across processes.
+    """The composed pipeline is stable across processes.
 
     ``strip_html`` being deterministic does not make ``normalize``
     deterministic -- each added stage introduces its own opportunities to leak
@@ -234,7 +234,7 @@ def test_no_wall_clock_leaks_into_the_normalized_output():
 
 
 # ---------------------------------------------------------------------------
-# M4: anchor_html across processes
+# anchor_html across processes
 # ---------------------------------------------------------------------------
 
 
