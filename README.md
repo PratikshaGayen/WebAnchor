@@ -1,72 +1,80 @@
 # WebAnchor
 
-**A web-evidence normalization layer for GenLayer intelligent contracts.**
+A normalization layer that sits between a GenLayer contract's web fetch and the LLM.
 
-GenLayer's differentiator is contracts that read the web. The problem: the leader
-and every validator fetch independently, and real pages never hold still between
-two fetches milliseconds apart — rotating ads, minted CSRF nonces, ticking
-timestamps, incrementing counters. GenLayer's own docs tell developers to
-hand-roll a defense per contract ("extract stable fields," "derive status from
-variable data"). There was no library for this.
+Here's the problem it's solving. On GenLayer, the leader and every validator hit a
+URL independently. Real pages don't hold still between those requests - ads
+rotate, CSRF tokens get reissued, timestamps tick over, view counters go up by
+one. So `gl.eq_principle.strict_eq`, which is the cheap "just compare and agree"
+primitive, basically never works on raw web content. Everyone ends up hand-rolling
+their own fix per contract (GenLayer's own docs even tell you to go extract
+stable fields yourself). There wasn't a library for this, so I built one.
 
-**WebAnchor turns a web read into a `strict_eq`-able fact.** It sits between
-`gl.nondet.web` and the LLM: strips volatile DOM, canonicalizes numbers into
-versioned bands, redacts or quantizes timestamps, and emits a stable content
-fingerprint — or raises a typed error instead of silently producing a verdict
-from a bot-wall or soft-error page.
+WebAnchor strips the volatile stuff out of a page - nonces, timestamps, comment
+blocks, ad slots - canonicalizes what's left (numbers get banded, timestamps get
+redacted or bucketed depending on policy), and hashes the result into a
+fingerprint. Two validators hitting the same page a second apart should get the
+same fingerprint even though they pulled different bytes. If it can't produce
+something stable, it throws a typed error instead of quietly handing garbage to
+the LLM.
 
 ```python
 import webanchor
 
 evidence = webanchor.anchor("https://example.com/product/42")
-evidence.fingerprint   # "wa1:<64 hex>" — stable across independent validator fetches
-evidence.text          # normalized text, safe to feed an LLM
+evidence.fingerprint   # "wa1:..." - stable across independent fetches
+evidence.text          # normalized text, safe to hand to an LLM
 ```
 
-## What's here
+## Layout
 
-| Path | What it is |
-|---|---|
-| [`webanchor/`](webanchor/) | The library. Zero third-party dependencies — stdlib only. Imports and runs with no GenLayer SDK present. |
-| [`contracts/`](contracts/) | Two GenVM contracts side by side: `naive_reader.py` (reads the web directly, fails consensus) and `anchored_reader/` (same shape, routed through WebAnchor, converges). |
-| [`tests/`](tests/) | 1,335 tests for the library, 4 direct-mode tests proving the two contracts diverge/converge as claimed. |
-| [`tools/corpus_bench.py`](tools/corpus_bench.py) | The mutation-based validator simulator behind `BENCHMARK.md`. |
-| [`BLUEPRINT.md`](BLUEPRINT.md) | Architecture and the six non-negotiable rules (R1–R6) the codebase is structurally tested against. |
-| [`BENCHMARK.md`](BENCHMARK.md) | Measured agreement rates across a hand-written page corpus — including the cases that are *not* 100%, and why. |
-| [`README_DEMO.md`](README_DEMO.md) | The 30-second proof: run one command, see a naive read fail and an anchored read converge. |
-| [`SUBMISSION.md`](SUBMISSION.md) | GenLayer ecosystem rewards submission draft. |
+- `webanchor/` - the library itself. No dependencies, stdlib only, and it imports
+  fine even without the GenLayer SDK installed.
+- `contracts/` - two demo contracts. `naive_reader.py` reads the web the obvious
+  way and fails consensus. `anchored_reader/` does the same thing routed through
+  WebAnchor and doesn't.
+- `tests/` - 1,335 tests for the library, plus a handful of direct-mode tests
+  that actually deploy both contracts and show one failing, one passing.
+- `tools/corpus_bench.py` - the script behind the numbers in BENCHMARK.md.
+- `BLUEPRINT.md` - architecture notes and the rules I held the code to.
+- `BENCHMARK.md` - measured agreement rates, including the runs that didn't hit
+  100% and why.
+- `README_DEMO.md` - the short version of the proof, one command.
+- `SUBMISSION.md` - draft text for the GenLayer ecosystem rewards submission.
 
-## Quickstart
+## Running it
 
 ```bash
 git clone https://github.com/PratikshaGayen/WebAnchor.git
 cd WebAnchor
 pip install -e ".[dev]"
 
-python -m pytest tests/ -v         # the library, 1335 tests, no network, no GenVM
-python -m pytest tests/direct/ -v  # the demo contracts, 4 tests, no live node
-python tools/corpus_bench.py       # the benchmark numbers in BENCHMARK.md
+pytest tests/ -v              # library tests, no network, no GenVM needed
+pytest tests/direct/ -v       # the two demo contracts, still no live node
+python tools/corpus_bench.py  # regenerates the benchmark numbers
 ```
 
-## Why this is real, not a mock
+## A few things worth knowing before you trust it
 
-- **Structurally enforced, not just documented.** An AST-based test walks every file
-  in `webanchor/` and fails the build if anything imports a non-stdlib module, or
-  imports GenLayer at module scope outside `fetch.py`. The rule can't quietly rot.
-- **Determinism is proven across processes.** A test suite runs the pipeline under
-  three different `PYTHONHASHSEED` values in separate subprocesses and demands
-  byte-identical output — catching the class of bug where a fingerprint would
-  silently differ per validator for reasons that have nothing to do with the page.
-- **The benchmark reports its own limits.** `BENCHMARK.md` includes a case where
-  agreement is 1 out of 25 simulated validators and explains exactly why, instead
-  of only showing numbers that make the library look good.
-- **The demo proves both directions.** The anchored contract doesn't just converge
-  on the same page fetched twice — a separate test confirms it still produces
-  different fingerprints on two genuinely different pages, so it isn't a constant
-  function wearing a costume.
+There's a test that walks the AST of every file in `webanchor/` and fails the
+build if something imports a non-stdlib package, or imports GenLayer outside of
+`fetch.py`. I wanted that rule actually enforced, not just written down
+somewhere and forgotten about three weeks later.
 
-## Status
+Determinism gets checked across process boundaries too - the same input run
+under three different `PYTHONHASHSEED` values has to come out byte-identical.
+It's the kind of bug that's easy to introduce by accident and only shows up
+months later as validators mysteriously disagreeing on nothing.
 
-v1 complete. Six build phases (foundation → HTML stripping → canonicalization →
-fetch/detection → benchmark → demo contract), each independently verified. See
-`BLUEPRINT.md` for the full scope and `BENCHMARK.md` for the numbers.
+BENCHMARK.md isn't all good news, on purpose. One test case only converges 1
+out of 25 times, and I wrote up exactly why instead of quietly leaving it out.
+The anchored contract also gets checked against two genuinely different pages
+to make sure it still disagrees on those - otherwise it'd just be a constant
+pretending to be useful.
+
+## Where it's at
+
+v1, and I'd call it done: library, HTML stripping, text/number/timestamp
+canonicalization, fetch + bot-wall detection, the benchmark, then the demo
+contracts, each one checked before I moved on to the next. `BLUEPRINT.md` has
+the full breakdown, `BENCHMARK.md` has the numbers.
